@@ -1,283 +1,273 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Product Search and Calorie Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <!-- Google Font (San Francisco like font) -->
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- Bootstrap 5 CSS -->
+  <title>Калькулятор Калорий</title>
+  <!-- Подключение Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Telegram Web Apps JS SDK -->
+  <!-- Подключение Telegram Web Apps JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background: #f5f5f7;
-      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding-top: 50px;
-      position: relative;
+      background: linear-gradient(135deg, #d4fc79, #96e6a1);
+      padding-top: 40px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .card {
-      border: none;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
-      overflow: hidden;
-    }
-    .card-header {
-      background-color: #f9f9f9;
-      padding: 25px;
-      font-size: 1.6rem;
-      text-align: center;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 1px solid #eaeaea;
-    }
-    .form-label {
-      font-weight: 500;
-      color: #333;
-    }
-    .form-control {
-      border-radius: 15px;
-      border: 1px solid #ddd;
-      padding: 12px;
-      font-size: 1rem;
-      box-sizing: border-box;
-      margin-bottom: 15px;
-    }
-    .form-control:focus {
-      border-color: #007aff;
-      box-shadow: 0 0 5px rgba(0, 122, 255, 0.5);
-    }
-    .btn {
-      border-radius: 15px;
-      padding: 12px;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    .btn-primary {
-      background-color: #007aff;
-      border: none;
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background-color: #005bb5;
-    }
-    .alert {
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      font-size: 1.1rem;
-      margin-top: 20px;
-    }
-    .alert-info {
-      background-color: #eaf4ff;
-      color: #007aff;
-    }
-    .alert-danger {
-      background-color: #ffeaea;
-      color: #ff3b30;
-    }
-    #languageSelect {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      padding: 8px 15px;
-      border-radius: 15px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    #searchResults {
-      max-height: 250px;
-      overflow-y: auto;
-    }
-    .search-item {
-      padding: 15px;
-      border-bottom: 1px solid #f0f0f5;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    .search-item:hover {
-      background-color: #f7f7f8;
-    }
-    #productSearch {
-      margin-bottom: 20px;
-    }
-  </style>
+      max-width: 500px;
+      margin: auto;
+      border: n<style>
+  body {
+    background: white;
+    padding-top: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .card {
+    max-width: 500px;
+    margin: auto;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    background-color: #40E0D0;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.5rem;
+  }
+
+  .card-body {
+    background-color: #fff;
+    padding: 30px;
+  }
+
+  .btn-primary {
+    background-color: #40E0D0;
+    border-color: #40E0D0;
+  }
+
+  .btn-primary:hover {
+    background-color: #2ccfc0;
+    border-color: #2ccfc0;
+  }
+
+  .btn-success {
+    background-color: #40E0D0;
+    border-color: #40E0D0;
+  }
+
+  .btn-success:hover {
+    background-color: #2ccfc0;
+    border-color: #2ccfc0;
+  }
+
+  .alert {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+</style>
 </head>
 <body>
-  <select id="languageSelect">
-    <option value="en">English</option>
-    <option value="ru">Русский</option>
-    <option value="fr">Français</option>
-    <option value="de">Deutsch</option>
-    <option value="es">Español</option>
-    <option value="it">Italiano</option>
-  </select>
-
   <div class="container">
-    <!-- Блок поиска продуктов -->
+    <!-- Основной калькулятор -->
     <div class="card mb-4">
-      <div class="card-header" id="productSearchTitle">Product Search</div>
+      <div class="card-header">
+        Калькулятор Калорий
+      </div>
       <div class="card-body">
-        <input type="text" class="form-control mb-3" id="productSearch" placeholder="Search for products..." oninput="debouncedSearch()">
-        <div id="searchResults"></div>
-        <form id="productForm" style="display: none;">
+        <form id="calorieForm">
           <div class="mb-3">
-            <label for="product" class="form-label" id="productLabel">Product</label>
-            <input type="text" class="form-control" id="product" readonly>
+            <label for="product" class="form-label">Выберите продукт</label>
+            <select class="form-select" id="product"></select>
           </div>
           <div class="mb-3">
-            <label for="weight" class="form-label" id="weightLabel">Weight (grams)</label>
-            <input type="number" class="form-control" id="weight" placeholder="Enter weight">
+            <label for="weight" class="form-label">Вес (в граммах)</label>
+            <input type="number" class="form-control" id="weight" placeholder="Введите вес">
           </div>
-<div class="d-grid mb-3">
-            <button type="button" class="btn btn-primary" onclick="calculateCalories()" id="calculateButton">Calculate</button>
+          <div class="d-grid mb-3">
+            <button type="button" class="btn btn-primary" onclick="calculateCalories()">Рассчитать</button>
+          </div>
+        </form>
+        <div class="alert alert-info text-center" id="result" role="alert">
+          Результат появится здесь
+        </div>
+      </div>
+    </div>
+
+    <!-- Форма добавления продукта -->
+    <div class="card mb-4">
+      <div class="card-header">
+        Добавить продукт
+      </div>
+      <div class="card-body">
+        <form id="addProductForm">
+          <div class="mb-3">
+            <label class="form-label">Название продукта</label>
+            <input type="text" class="form-control" id="newProductName" placeholder="Например: омлет">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Калорий на 100 г</label>
+            <input type="number" class="form-control" id="newProductCalories" placeholder="Например: 160">
+          </div>
+          <div class="d-grid">
+            <button type="button" class="btn btn-success" onclick="addProduct()">Добавить</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Результат расчёта калорий -->
-    <div class="alert alert-info text-center" id="result" role="alert">
-      Result will appear here
+    <!-- История расчётов -->
+    <div class="card mb-4">
+      <div class="card-header">
+        История расчетов
+      </div>
+      <ul class="list-group list-group-flush" id="historyList"></ul>
     </div>
   </div>
 
+  <!-- Подключение Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
 
-    // Перевод интерфейса
-    const translateApiUrl = "https://libretranslate.de/translate";
-    let selectedLang = localStorage.getItem("lang") || "en";
-    document.getElementById("languageSelect").value = selectedLang;
+    // База продуктов (калорийность на 100 г)
+    const productData = {
+      apple: 52,
+      banana: 96,
+      orange: 47,
+      grapes: 69,
+      kiwi: 61,
+      pineapple: 50,
+      watermelon: 30,
+      mango: 60,
+      strawberry: 33,
+      blueberry: 57,
+      raspberry: 52,
+      cherry: 63,
+      peach: 39,
+      pear: 57,
+      plum: 46,
+      apricot: 48,
+      grapefruit: 42,
+      tomato: 18,
+      cucumber: 15,
+      carrot: 41,
+      potato: 77,
+      sweet_potato: 86,
+beet: 43,
+      cabbage: 25,
+      cauliflower: 25,
+      broccoli: 34,
+      spinach: 23,
+      lettuce: 15,
+      zucchini: 17,
+      eggplant: 25,
+      bell_pepper: 31,
+      onion: 40,
+      chicken: 165,
+      beef: 250,
+      pork: 242,
+      lamb: 294,
+      turkey: 135,
+      duck: 337,
+      salmon: 208,
+      tuna: 132,
+      cod: 82,
+      trout: 148,
+      shrimp: 99,
+      milk: 60,
+      cheese: 350,
+      yogurt: 59,
+      cottage: 98,
+      cream: 340,
+      rice: 130,
+      pasta: 131,
+      buckwheat: 343,
+      oats: 68,
+      quinoa: 120,
+      barley: 352,
+      white_bread: 265,
+      wholewheat_bread: 247,
+      bagel: 250,
+      croissant: 406,
+      pelmeni: 250,
+      sandwich: 250,
+      burger: 295,
+      pizza: 266,
+      dumplings: 190,
+      kebab: 220,
+      almonds: 579,
+      walnuts: 654,
+      cashews: 553,
+      peanuts: 567,
+      chocolate: 546,
+      chips: 536,
+      cracker: 407,
+      pretzel: 380,
+      lentils: 116,
+      chickpeas: 164,
+      beans: 127,
+      peas: 81
+    };
 
-    // Загружаем данные из localStorage
-    let productData = JSON.parse(localStorage.getItem("productData")) || [];
-    let history = JSON.parse(localStorage.getItem("calorieHistory")) || [];
-    let productTranslations = JSON.parse(localStorage.getItem("productTranslations")) || {};
+    const history = [];
 
-    // Дебаунсинг для поиска
-    let searchTimeout;
-    function debouncedSearch() {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(searchProducts, 500);
-    }
-
-    // Поиск продуктов с использованием Open Food Facts API
-    async function searchProducts() {
-      const query = document.getElementById('productSearch').value.trim();
-      if (!query) {
-        document.getElementById('searchResults').innerHTML = '';
-        return;
+    function updateProductDropdown() {
+      const select = document.getElementById("product");
+      select.innerHTML = "";
+      for (const key in productData) {
+        const option = document.createElement("option");
+        option.value = key;
+        option.text = `${key} (${productData[key]} ккал/100г)`;
+        select.appendChild(option);
       }
-
-      // Проверка кешированных данных
-      const cachedResults = JSON.parse(localStorage.getItem(`search_${query}`));
-      if (cachedResults) {
-        displaySearchResults(cachedResults);
-        return;
-      }
-
-      const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&sort_by=popularity&json=1`);
-      const data = await res.json();
-      const products = data.products || [];
-
-      // Ограничиваем количество результатов до 10
-      const limitedProducts = products.slice(0, 10);
-      
-      // Сохранение результатов в кеш
-      localStorage.setItem(`search_${query}`, JSON.stringify(limitedProducts));
-
-      displaySearchResults(limitedProducts);
     }
 
-    // Отображение результатов поиска
-    function displaySearchResults(products) {
-      let resultsHtml = '';
-      products.forEach(product => {
-        const productName = product.product_name || 'Unknown product';
-        resultsHtml += `
-          <div class="search-item" onclick="selectProduct('${productName}')">
-            ${productName}
-          </div>
-        `;
-      });
-
-      document.getElementById('searchResults').innerHTML = resultsHtml;
-    }
-
-    // Выбор продукта
-    function selectProduct(productName) {
-      document.getElementById('product').value = productName;
-      document.getElementById('productForm').style.display = 'block';
-      document.getElementById('searchResults').innerHTML = ''; // Скрыть результаты поиска
-    }
-
-    // Расчёт калорий (если данные о калориях есть в данных продукта)
     function calculateCalories() {
+      const product = document.getElementById('product').value;
       const weight = parseFloat(document.getElementById('weight').value);
-      const productName = document.getElementById('product').value;
-
-      if (!weight || !productName) {
-        document.getElementById("result").innerHTML = "Please select a product and enter a valid weight.";
+      const resultDiv = document.getElementById('result');
+      if (!weight || weight <= 0) {
+        resultDiv.innerText = "Введите корректный вес";
+        resultDiv.classList.replace("alert-info", "alert-danger");
         return;
       }
+      resultDiv.classList.replace("alert-danger", "alert-info");
+      const calories = (productData[product] * weight) / 100;
+      resultDiv.innerText = `Общая калорийность: ${calories.toFixed(2)} ккал`;
 
-      // Получение калорий с Open Food Facts (примерно)
-      const product = productData.find(p => p.name === productName);
-      if (!product || !product.calories) {
-        document.getElementById("result").innerHTML = "No calorie information available for this product.";
-        return;
-      }
-
-      const calories = (product.calories / 100) * weight;
-      document.getElementById("result").innerHTML = `You consumed ${calories.toFixed(2)} calories from ${productName}.`;
-      saveHistory(productName, weight, calories);
+      // Сохраняем в историю
+      history.push({ product, weight, calories: calories.toFixed(2) });
+      renderHistory();
     }
 
-    // Сохранение истории
-    function saveHistory(productName, weight, calories) {
-      history.push({ productName, weight, calories });
-      localStorage.setItem("calorieHistory", JSON.stringify(history));
+    function addProduct() {
+      const name = document.getElementById('newProductName').value.trim().toLowerCase();
+      const kcal = parseFloat(document.getElementById('newProductCalories').value);
+      if (!name || !kcal) return alert("Введите корректные данные");
+      productData[name] = kcal;
+      updateProductDropdown();
+      alert(`Продукт "${name}" добавлен!`);
     }
 
-    // Перевод интерфейса
-    async function translateInterface() {
-      const labels = {
-        productSearchTitle: "Product Search",
-        productLabel: "Product",
-        weightLabel: "Weight (grams)",
-        calculateButton: "Calculate",
-        result: "Result will appear here"
-      };
-      for (let id in labels) {
-        const translated = await translateText(labels[id], selectedLang);
-        document.getElementById(id).innerText = translated;
-      }
+    function renderHistory() {
+      const list = document.getElementById("historyList");
+      list.innerHTML = "";
+      history.slice().reverse().forEach(item => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.innerText = `${item.product}, ${item.weight} г — ${item.calories} ккал`;
+        list.appendChild(li);
+      });
     }
 
-    // Обработчик изменения языка
-    document.getElementById("languageSelect").addEventListener("change", async function() {
-      selectedLang = this.value;
-      localStorage.setItem("lang", selectedLang);
-      await translateInterface();
-    });
-
-    // Инициализация перевода интерфейса при загрузке
-    translateInterface();
+    updateProductDropdown();
   </script>
 </body>
 </html>
