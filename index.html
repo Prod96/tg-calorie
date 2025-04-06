@@ -1,273 +1,370 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Calorie Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Калькулятор Калорий</title>
-  <!-- Подключение Bootstrap 5 CSS -->
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Подключение Telegram Web Apps JS SDK -->
+  <!-- Telegram Web Apps JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background: linear-gradient(135deg, #d4fc79, #96e6a1);
+      background: #fff;
       padding-top: 40px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      position: relative;
     }
     .card {
-      max-width: 500px;
-      margin: auto;
-      border: n<style>
-  body {
-    background: white;
-    padding-top: 40px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-  .card {
-    max-width: 500px;
-    margin: auto;
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .card-header {
-    background-color: #40E0D0;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-    font-size: 1.5rem;
-  }
-
-  .card-body {
-    background-color: #fff;
-    padding: 30px;
-  }
-
-  .btn-primary {
-    background-color: #40E0D0;
-    border-color: #40E0D0;
-  }
-
-  .btn-primary:hover {
-    background-color: #2ccfc0;
-    border-color: #2ccfc0;
-  }
-
-  .btn-success {
-    background-color: #40E0D0;
-    border-color: #40E0D0;
-  }
-
-  .btn-success:hover {
-    background-color: #2ccfc0;
-    border-color: #2ccfc0;
-  }
-
-  .alert {
-    font-size: 1.2rem;
-    font-weight: 500;
-  }
-</style>
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .card-header {
+      background-color: #f8f8f8;
+      padding: 20px;
+      font-size: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid #eaeaea;
+    }
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      border: 1px solid #eaeaea;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .btn {
+      border-radius: 8px;
+      padding: 10px;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background-color: #007aff;
+      border: none;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: #005bb5;
+    }
+    .btn-success {
+      background-color: #34c759;
+      border: none;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background-color: #28a745;
+    }
+    .alert {
+      border: none;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    .alert-info {
+      background-color: #eaf4ff;
+      color: #007aff;
+    }
+    .alert-danger {
+      background-color: #ffeaea;
+      color: #ff3b30;
+    }
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid #eaeaea;
+    }
+    /* Стили для переключателя языка в правом верхнем углу */
+    #languageSelect {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid #eaeaea;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
+  <!-- Переключатель языка -->
+  <select id="languageSelect">
+    <option value="en">English</option>
+    <option value="ru">Русский</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="es">Español</option>
+    <option value="it">Italiano</option>
+  </select>
+
   <div class="container">
     <!-- Основной калькулятор -->
     <div class="card mb-4">
-      <div class="card-header">
-        Калькулятор Калорий
-      </div>
+      <div class="card-header" id="titleLabel">Calorie Calculator</div>
       <div class="card-body">
         <form id="calorieForm">
           <div class="mb-3">
-            <label for="product" class="form-label">Выберите продукт</label>
+            <label for="product" class="form-label" id="productLabel">Choose product</label>
             <select class="form-select" id="product"></select>
           </div>
           <div class="mb-3">
-            <label for="weight" class="form-label">Вес (в граммах)</label>
-            <input type="number" class="form-control" id="weight" placeholder="Введите вес">
+            <label for="weight" class="form-label" id="weightLabel">Weight (grams)</label>
+            <input type="number" class="form-control" id="weight" placeholder="Enter weight">
           </div>
           <div class="d-grid mb-3">
-            <button type="button" class="btn btn-primary" onclick="calculateCalories()">Рассчитать</button>
+            <button type="button" class="btn btn-primary" onclick="calculateCalories()" id="calculateButton">Calculate</button>
           </div>
         </form>
         <div class="alert alert-info text-center" id="result" role="alert">
-          Результат появится здесь
+          Result will appear here
         </div>
       </div>
     </div>
 
-    <!-- Форма добавления продукта -->
+    <!-- Добавление продукта вручную -->
     <div class="card mb-4">
-      <div class="card-header">
-        Добавить продукт
-      </div>
+      <div class="card-header" id="addTitle">Add Product</div>
       <div class="card-body">
         <form id="addProductForm">
           <div class="mb-3">
-            <label class="form-label">Название продукта</label>
-            <input type="text" class="form-control" id="newProductName" placeholder="Например: омлет">
+            <label class="form-label" id="nameLabel">Product Name</label>
+            <input type="text" class="form-control" id="newProductName" placeholder="e.g. Omelet">
           </div>
           <div class="mb-3">
-            <label class="form-label">Калорий на 100 г</label>
-            <input type="number" class="form-control" id="newProductCalories" placeholder="Например: 160">
+<label class="form-label" id="calorieLabel">Calories per 100g</label>
+            <input type="number" class="form-control" id="newProductCalories" placeholder="e.g. 160">
           </div>
           <div class="d-grid">
-            <button type="button" class="btn btn-success" onclick="addProduct()">Добавить</button>
+            <button type="button" class="btn btn-success" onclick="addProduct()" id="addButton">Add</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Поиск продукта через Open Food Facts -->
+    <div class="card mb-4">
+      <div class="card-header" id="searchTitle">Search Products</div>
+      <div class="card-body">
+        <div class="mb-3">
+          <input type="text" id="searchInput" class="form-control" placeholder="Enter product name">
+        </div>
+        <div class="d-grid mb-3">
+          <button type="button" class="btn btn-primary" onclick="searchProducts()" id="searchButton">Search</button>
+        </div>
+        <ul class="list-group" id="searchResults"></ul>
       </div>
     </div>
 
     <!-- История расчётов -->
     <div class="card mb-4">
-      <div class="card-header">
-        История расчетов
-      </div>
+      <div class="card-header" id="historyTitle">Calculation History</div>
       <ul class="list-group list-group-flush" id="historyList"></ul>
     </div>
   </div>
 
-  <!-- Подключение Bootstrap 5 JS -->
+  <!-- Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
 
-    // База продуктов (калорийность на 100 г)
-    const productData = {
-      apple: 52,
-      banana: 96,
-      orange: 47,
-      grapes: 69,
-      kiwi: 61,
-      pineapple: 50,
-      watermelon: 30,
-      mango: 60,
-      strawberry: 33,
-      blueberry: 57,
-      raspberry: 52,
-      cherry: 63,
-      peach: 39,
-      pear: 57,
-      plum: 46,
-      apricot: 48,
-      grapefruit: 42,
-      tomato: 18,
-      cucumber: 15,
-      carrot: 41,
-      potato: 77,
-      sweet_potato: 86,
-beet: 43,
-      cabbage: 25,
-      cauliflower: 25,
-      broccoli: 34,
-      spinach: 23,
-      lettuce: 15,
-      zucchini: 17,
-      eggplant: 25,
-      bell_pepper: 31,
-      onion: 40,
-      chicken: 165,
-      beef: 250,
-      pork: 242,
-      lamb: 294,
-      turkey: 135,
-      duck: 337,
-      salmon: 208,
-      tuna: 132,
-      cod: 82,
-      trout: 148,
-      shrimp: 99,
-      milk: 60,
-      cheese: 350,
-      yogurt: 59,
-      cottage: 98,
-      cream: 340,
-      rice: 130,
-      pasta: 131,
-      buckwheat: 343,
-      oats: 68,
-      quinoa: 120,
-      barley: 352,
-      white_bread: 265,
-      wholewheat_bread: 247,
-      bagel: 250,
-      croissant: 406,
-      pelmeni: 250,
-      sandwich: 250,
-      burger: 295,
-      pizza: 266,
-      dumplings: 190,
-      kebab: 220,
-      almonds: 579,
-      walnuts: 654,
-      cashews: 553,
-      peanuts: 567,
-      chocolate: 546,
-      chips: 536,
-      cracker: 407,
-      pretzel: 380,
-      lentils: 116,
-      chickpeas: 164,
-      beans: 127,
-      peas: 81
+    // Используем LibreTranslate для динамического перевода
+    const translateApiUrl = "https://libretranslate.de/translate";
+    let selectedLang = localStorage.getItem("lang") || "en";
+    document.getElementById("languageSelect").value = selectedLang;
+
+    // Дефолтные данные продуктов
+    const productDataDefault = {
+      apple: 52, banana: 96, orange: 47, grapes: 69, kiwi: 61,
+      salmon: 208, chicken: 165, pasta: 131, rice: 130, pizza: 266
     };
 
-    const history = [];
+    // Загружаем данные о продуктах и историю из localStorage
+    let productData = JSON.parse(localStorage.getItem("productData")) || { ...productDataDefault };
+    let history = JSON.parse(localStorage.getItem("calorieHistory")) || [];
+    let productTranslations = JSON.parse(localStorage.getItem("productTranslations")) || {};
 
+    // Функция для преобразования строки: первая буква заглавная
+    function titleCase(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Перевод текста через LibreTranslate API
+    async function translateText(text, targetLang) {
+      const res = await fetch(translateApiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ q: text, source: "en", target: targetLang, format: "text" })
+      });
+      const data = await res.json();
+      return data.translatedText;
+    }
+
+    // Перевод интерфейса (элементы, которые заданы в коде)
+    async function translateInterface() {
+      const labels = {
+        titleLabel: "Calorie Calculator",
+        productLabel: "Choose product",
+        weightLabel: "Weight (grams)",
+        calculateButton: "Calculate",
+        result: "Result will appear here",
+        addTitle: "Add Product",
+        nameLabel: "Product Name",
+        calorieLabel: "Calories per 100g",
+        addButton: "Add",
+        historyTitle: "Calculation History",
+        searchTitle: "Search Products",
+        searchButton: "Search"
+      };
+      for (let id in labels) {
+        const translated = await translateText(labels[id], selectedLang);
+        document.getElementById(id).innerText = translated;
+      }
+    }
+
+    // Перевод названий продуктов
+    async function translateProducts() {
+      const keys = Object.keys(productData);
+      for (let key of keys) {
+        if (!productTranslations[key] || localStorage.getItem("lang") !== selectedLang) {
+          const translated = await translateText(key, selectedLang);
+          productTranslations[key] = titleCase(translated);
+        }
+      }
+      localStorage.setItem("productTranslations", JSON.stringify(productTranslations));
+    }
+
+    // Обновление выпадающего списка продуктов
     function updateProductDropdown() {
-      const select = document.getElementById("product");
+      const select
+= document.getElementById("product");
       select.innerHTML = "";
       for (const key in productData) {
+        const translated = productTranslations[key] || titleCase(key);
         const option = document.createElement("option");
         option.value = key;
-        option.text = `${key} (${productData[key]} ккал/100г)`;
+        option.text = `${translated} (${productData[key]} kcal/100g)`;
         select.appendChild(option);
       }
     }
 
+    // Основной калькулятор
     function calculateCalories() {
-      const product = document.getElementById('product').value;
-      const weight = parseFloat(document.getElementById('weight').value);
-      const resultDiv = document.getElementById('result');
+      const product = document.getElementById("product").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+      const resultDiv = document.getElementById("result");
       if (!weight || weight <= 0) {
-        resultDiv.innerText = "Введите корректный вес";
+        resultDiv.innerText = selectedLang === "ru" ? "Введите корректный вес" : "Please enter valid weight";
         resultDiv.classList.replace("alert-info", "alert-danger");
         return;
       }
       resultDiv.classList.replace("alert-danger", "alert-info");
       const calories = (productData[product] * weight) / 100;
-      resultDiv.innerText = `Общая калорийность: ${calories.toFixed(2)} ккал`;
+      resultDiv.innerText = `${productTranslations[product] || titleCase(product)}: ${calories.toFixed(2)} kcal`;
 
-      // Сохраняем в историю
       history.push({ product, weight, calories: calories.toFixed(2) });
+      localStorage.setItem("calorieHistory", JSON.stringify(history));
       renderHistory();
     }
 
-    function addProduct() {
-      const name = document.getElementById('newProductName').value.trim().toLowerCase();
-      const kcal = parseFloat(document.getElementById('newProductCalories').value);
-      if (!name || !kcal) return alert("Введите корректные данные");
-      productData[name] = kcal;
-      updateProductDropdown();
-      alert(`Продукт "${name}" добавлен!`);
-    }
-
+    // Отображение истории расчётов
     function renderHistory() {
       const list = document.getElementById("historyList");
       list.innerHTML = "";
       history.slice().reverse().forEach(item => {
         const li = document.createElement("li");
         li.className = "list-group-item";
-        li.innerText = `${item.product}, ${item.weight} г — ${item.calories} ккал`;
+        li.innerText = `${productTranslations[item.product] || titleCase(item.product)}, ${item.weight}g — ${item.calories} kcal`;
         list.appendChild(li);
       });
     }
 
-    updateProductDropdown();
+    // Добавление продукта вручную
+    function addProduct() {
+      const name = document.getElementById('newProductName').value.trim().toLowerCase();
+      const kcal = parseFloat(document.getElementById('newProductCalories').value);
+      if (!name || !kcal) return alert("Enter valid product");
+      productData[name] = kcal;
+      localStorage.setItem("productData", JSON.stringify(productData));
+      translateProducts(); // авто-перевод для нового продукта
+      updateProductDropdown();
+      alert(`${titleCase(name)} added!`);
+    }
+
+    // Поиск продуктов через Open Food Facts API
+    async function searchProducts() {
+      const query = document.getElementById("searchInput").value.trim();
+      if (!query) return;
+      const url = "https://world.openfoodfacts.org/cgi/search.pl?search_terms=" +
+                  encodeURIComponent(query) +
+                  "&search_simple=1&action=process&json=1";
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        displaySearchResults(data.products);
+      } catch (error) {
+        console.error("Error fetching Open Food Facts:", error);
+      }
+    }
+
+    // Отображение результатов поиска
+    function displaySearchResults(products) {
+      const resultsList = document.getElementById("searchResults");
+      resultsList.innerHTML = "";
+      if (!products || products.length === 0) {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.innerText = selectedLang === "ru" ? "Продукты не найдены" : "No products found";
+        resultsList.appendChild(li);
+        return;
+      }
+      products.forEach(prod => {
+        // Попробуем взять энергию (калории) из nutriments, если есть
+        let kcal = prod.nutriments && (prod.nutriments["energy-kcal_100g"] || prod.nutriments["energy-kcal"]);
+        if (!kcal) return; // пропускаем, если данных нет
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.style.cursor = "pointer";
+        // По умолчанию имя продукта из API (на английском)
+        let prodName = prod.product_name || "Unnamed product";
+        li.innerText = titleCase(prodName) + " (" + kcal + " kcal/100g)";
+        li.onclick = async function () {
+// Добавляем выбранный продукт в productData
+          productData[prodName.toLowerCase()] = kcal;
+          localStorage.setItem("productData", JSON.stringify(productData));
+          await translateProducts();
+          updateProductDropdown();
+          alert(titleCase(prodName) + " added!");
+        };
+        resultsList.appendChild(li);
+      });
+    }
+
+    // Обработчик изменения языка
+    document.getElementById("languageSelect").addEventListener("change", async function () {
+      selectedLang = this.value;
+      localStorage.setItem("lang", selectedLang);
+      await translateInterface();
+      await translateProducts();
+      updateProductDropdown();
+    });
+
+    // Инициализация при загрузке страницы
+    (async function init() {
+      await translateInterface();
+      await translateProducts();
+      updateProductDropdown();
+      renderHistory();
+    })();
   </script>
 </body>
 </html>
