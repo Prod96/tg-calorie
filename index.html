@@ -130,7 +130,7 @@
     <div class="card mb-4">
       <div class="card-header" id="productSearchTitle">Product Search</div>
       <div class="card-body">
-        <input type="text" class="form-control mb-3" id="productSearch" placeholder="Search for products..." oninput="searchProducts()">
+        <input type="text" class="form-control mb-3" id="productSearch" placeholder="Search for products..." oninput="debouncedSearch()">
         <div id="searchResults"></div>
         <form id="productForm" style="display: none;">
           <div class="mb-3">
@@ -169,15 +169,11 @@
     let history = JSON.parse(localStorage.getItem("calorieHistory")) || [];
     let productTranslations = JSON.parse(localStorage.getItem("productTranslations")) || {};
 
-    // Функция для перевода текста
-    async function translateText(text, targetLang) {
-      const res = await fetch(translateApiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ q: text, source: "en", target: targetLang, format: "text" })
-      });
-      const data = await res.json();
-      return data.translatedText;
+    // Дебаунсинг для поиска
+    let searchTimeout;
+    function debouncedSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(searchProducts, 500);
     }
 
     // Поиск продуктов с использованием Open Food Facts API
@@ -188,10 +184,28 @@
         return;
       }
 
-      const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1`);
+      // Проверка кешированных данных
+      const cachedResults = JSON.parse(localStorage.getItem(`search_${query}`));
+      if (cachedResults) {
+        displaySearchResults(cachedResults);
+        return;
+      }
+
+      const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&sort_by=popularity&json=1`);
       const data = await res.json();
       const products = data.products || [];
 
+      // Ограничиваем количество результатов до 10
+      const limitedProducts = products.slice(0, 10);
+      
+      // Сохранение результатов в кеш
+      localStorage.setItem(`search_${query}`, JSON.stringify(limitedProducts));
+
+      displaySearchResults(limitedProducts);
+    }
+
+    // Отображение результатов поиска
+    function displaySearchResults(products) {
       let resultsHtml = '';
       products.forEach(product => {
         const productName = product.product_name || 'Unknown product';
@@ -209,6 +223,7 @@
     function selectProduct(productName) {
       document.getElementById('product').value = productName;
       document.getElementById('productForm').style.display = 'block';
+      document.getElementById('searchResults').innerHTML = ''; // Скрыть результаты поиска
     }
 
     // Расчёт калорий (если данные о калориях есть в данных продукта)
